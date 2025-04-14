@@ -104,7 +104,7 @@ public class HandSynthEngine {
 
     private func loadSampleSound() {
         let ext = "wav"
-        guard let url = Bundle.main.url(forResource: "d5", withExtension: ext) else {
+        guard let url = Bundle.module.url(forResource: "d5", withExtension: ext) else {
             print("Sample file not found")
             return
         }
