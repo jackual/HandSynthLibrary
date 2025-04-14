@@ -1,0 +1,15 @@
+{
+  "originHash" : "9d1b1b3c64eb07a03e9a2ab5271560d1de2cc9a06cdb52dc4f5a16f56d33ed50",
+  "pins" : [
+    {
+      "identity" : "tonic",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/Tonic.git",
+      "state" : {
+        "revision" : "8f103c6765af93bc1d2c3e18eb35f02718b0613d",
+        "version" : "2.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}
