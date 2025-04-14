@@ -74,7 +74,7 @@ extension Array where Element == [UInt8] {
     }
 }
 
-class HandSynthLibrary {
+public class HandSynthEngine {
     private var engine = AVAudioEngine()
     private var sampler = AVAudioUnitSampler()
     
