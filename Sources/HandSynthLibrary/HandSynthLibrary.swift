@@ -6,11 +6,11 @@ extension Note {
     func octUp() -> Note {
         return self.shiftUp(.M9)!.shiftDown(.M2)!
     }
-    
+
     func octDown() -> Note {
         return self.shiftDown(.M9)!.shiftUp(.M2)!
     }
-    
+
     func toOct(_ targetOctave: Int) -> Note {
         let currentOctave = self.octave
         var result = self
@@ -31,13 +31,13 @@ extension Note {
 extension Key {
     func getMidi(_ octaveRange: ClosedRange<Int>) -> [UInt8] {
         var midiNoteNumbers: [UInt8] = []
-        
+
         for octave in octaveRange {
             self.noteSet.forEach({ Note in
                 midiNoteNumbers.append(UInt8(Note.toOct(octave).pitch.midiNoteNumber))
             })
         }
-        
+
         return midiNoteNumbers
     }
 }
@@ -45,13 +45,12 @@ extension Key {
 extension Chord {
     func getMidi(_ octave: Int) -> [UInt8] {
         var midiNoteNumbers: [UInt8] = []
-        
+
         self.noteClasses.forEach({ NoteClass in
-            // midiNoteNumbers.append(UInt8(NoteClass.canonicalNote.toOct(octave).pitch.midiNoteNumber))
             midiNoteNumbers.append(UInt8(NoteClass.canonicalNote.octDown().pitch.midiNoteNumber))
         })
+
         print(midiNoteNumbers)
-        
         return midiNoteNumbers
     }
 }
@@ -77,14 +76,14 @@ extension Array where Element == [UInt8] {
 public class HandSynthEngine {
     private var engine = AVAudioEngine()
     private var sampler = AVAudioUnitSampler()
-    
+
     private var noteCache: UInt8? = nil
     private var chordCache: [UInt8]? = nil
 
-    private(set) var notes: [UInt8] = []
-    private(set) var chords: [[UInt8]] = []
+    public private(set) var notes: [UInt8] = []
+    public private(set) var chords: [[UInt8]] = []
 
-    init(key: Key = .C, noteOctaves: ClosedRange<Int> = 1...4, chordOctave: Int = 3) {
+    public init(key: Key = .C, noteOctaves: ClosedRange<Int> = 1...4, chordOctave: Int = 3) {
         engine.attach(sampler)
         engine.connect(sampler, to: engine.mainMixerNode, format: nil)
 
@@ -130,8 +129,7 @@ public class HandSynthEngine {
         }
     }
 
-    /// Send a single note based on pitch and volume
-    func send(pitch: Float, volume: Float) {
+    public func send(pitch: Float, volume: Float) {
         let note = notes.noteFromFloat(pitch)
         guard note != noteCache else { return }
 
@@ -144,8 +142,7 @@ public class HandSynthEngine {
         sampler.startNote(note, withVelocity: velocity, onChannel: 0)
     }
 
-    /// Send a chord based on pitch and volume
-    func sendChord(pitch: Float, volume: Float) {
+    public func sendChord(pitch: Float, volume: Float) {
         let chord = chords.chordFromFloat(pitch)
         guard chord != chordCache else { return }
 
