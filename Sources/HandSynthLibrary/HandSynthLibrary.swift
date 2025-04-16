@@ -91,7 +91,14 @@ public class HandSynthEngine {
         loadSampleSound()
 
         notes = key.getMidi(noteOctaves)
-        chords = key.chords.map { $0.getMidi(chordOctave) }
+        chords = [
+            [48, 52, 55], // C major: C3, E3, G3
+            [43, 47, 50], // G major: G2, B2, D3
+            [45, 48, 52], // A minor: A2, C3, E3
+            [41, 45, 48]  // F major: F2, A2, C3
+        ]
+        
+        
     }
 
     private func setupEngine() {
