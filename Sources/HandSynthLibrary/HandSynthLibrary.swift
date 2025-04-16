@@ -42,7 +42,7 @@ extension Key {
     }
 }
 
-extension Chord {
+public extension Chord {
     func getMidi(_ octave: Int) -> [UInt8] {
         var midiNoteNumbers: [UInt8] = []
 
@@ -64,7 +64,7 @@ extension Array where Element == UInt8 {
     }
 }
 
-extension Array where Element == [UInt8] {
+public extension Array where Element == [UInt8] {
     func chordFromFloat(_ pitch: Float) -> [UInt8] {
         guard !isEmpty else { return [] }
         let clampedPitch = Swift.max(0, Swift.min(pitch, 1))
