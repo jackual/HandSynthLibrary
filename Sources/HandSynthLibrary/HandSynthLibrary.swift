@@ -2,15 +2,15 @@ import Foundation
 import Tonic
 import AVFoundation
 
-extension Note {
+public extension Note {
     func octUp() -> Note {
         return self.shiftUp(.M9)!.shiftDown(.M2)!
     }
-
+    
     func octDown() -> Note {
         return self.shiftDown(.M9)!.shiftUp(.M2)!
     }
-
+    
     func toOct(_ targetOctave: Int) -> Note {
         let currentOctave = self.octave
         var result = self
@@ -31,13 +31,13 @@ extension Note {
 extension Key {
     func getMidi(_ octaveRange: ClosedRange<Int>) -> [UInt8] {
         var midiNoteNumbers: [UInt8] = []
-
+        
         for octave in octaveRange {
             self.noteSet.forEach({ Note in
                 midiNoteNumbers.append(UInt8(Note.toOct(octave).pitch.midiNoteNumber))
             })
         }
-
+        
         return midiNoteNumbers
     }
 }
@@ -45,12 +45,11 @@ extension Key {
 public extension Chord {
     func getMidi(_ octave: Int) -> [UInt8] {
         var midiNoteNumbers: [UInt8] = []
-
+        
         self.noteClasses.forEach({ NoteClass in
             midiNoteNumbers.append(UInt8(NoteClass.canonicalNote.octDown().pitch.midiNoteNumber))
         })
-
-        print(midiNoteNumbers)
+        
         return midiNoteNumbers
     }
 }
@@ -76,20 +75,19 @@ public extension Array where Element == [UInt8] {
 public class HandSynthEngine {
     private var engine = AVAudioEngine()
     private var sampler = AVAudioUnitSampler()
-
+    
     private var noteCache: UInt8? = nil
     private var chordCache: [UInt8]? = nil
-
+    
     public private(set) var notes: [UInt8] = []
     public private(set) var chords: [[UInt8]] = []
-
+    
     public init(key: Key = .C, noteOctaves: ClosedRange<Int> = 1...4, chordOctave: Int = 3) {
         engine.attach(sampler)
         engine.connect(sampler, to: engine.mainMixerNode, format: nil)
-
+        
         setupEngine()
-        loadSampleSound()
-
+        
         notes = key.getMidi(noteOctaves)
         chords = [
             [48, 52, 55], // C major: C3, E3, G3
@@ -100,7 +98,7 @@ public class HandSynthEngine {
         
         
     }
-
+    
     private func setupEngine() {
         do {
             try engine.start()
@@ -108,14 +106,10 @@ public class HandSynthEngine {
             print("Couldn't start audio engine: \(error)")
         }
     }
-
-    private func loadSampleSound() {
-        let ext = "wav"
-        guard let url = Bundle.module.url(forResource: "d5", withExtension: ext) else {
-            print("Sample file not found")
-            return
-        }
-
+    
+    public func loadSampleSound(from url: URL) {
+        let ext = url.pathExtension.lowercased()
+        
         do {
             switch ext {
             case "wav":
@@ -128,6 +122,10 @@ public class HandSynthEngine {
                     bankLSB: UInt8(kAUSampler_DefaultBankLSB))
             case "exs":
                 try sampler.loadInstrument(at: url)
+            case "aupreset":
+                let data = try Data(contentsOf: url)
+                let preset = try PropertyListSerialization.propertyList(from: data, format: nil) as! [String: Any]
+                try sampler.loadInstrument(at: url)
             default:
                 print("Unsupported file type.")
             }
@@ -135,30 +133,30 @@ public class HandSynthEngine {
             print("Couldn't load sample: \(error)")
         }
     }
-
+    
     public func send(pitch: Float, volume: Float) {
         let note = notes.noteFromFloat(pitch)
         guard note != noteCache else { return }
-
+        
         if let oldNote = noteCache {
             sampler.stopNote(oldNote, onChannel: 0)
         }
-
+        
         noteCache = note
         let velocity = UInt8(30 + 60 * volume)
         sampler.startNote(note, withVelocity: velocity, onChannel: 0)
     }
-
+    
     public func sendChord(pitch: Float, volume: Float) {
         let chord = chords.chordFromFloat(pitch)
         guard chord != chordCache else { return }
-
+        
         if let oldChord = chordCache {
             for note in oldChord {
                 sampler.stopNote(note, onChannel: 1)
             }
         }
-
+        
         chordCache = chord
         let velocity = UInt8(30 + 60 * volume)
         for note in chord {

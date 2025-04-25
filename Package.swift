@@ -16,9 +16,6 @@ let package = Package(
             name: "HandSynthLibrary",
             dependencies: [
                 .product(name: "Tonic", package: "Tonic")
-            ],
-            resources: [
-                .copy("Resources/d5.wav")
             ]
         ),
     ]
