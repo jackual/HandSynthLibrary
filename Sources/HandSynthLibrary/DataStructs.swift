@@ -38,6 +38,12 @@ public struct Pattern {
         self.name = name
         self.patternNotes = patternNotes
     }
+    
+    public func getMidiNotes() -> [[UInt8]] {
+        return patternNotes.map { chord in
+            chord.map { $0.midiNoteNumber }
+        }
+    }
 }
 
 public struct PatchConfig {

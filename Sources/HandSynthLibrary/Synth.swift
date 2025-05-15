@@ -11,7 +11,7 @@ public class Synth {
     public private(set) var chords: [[UInt8]] = []
     
     public init(_ patch: Patch) {
-        chords = patch.pattern.patternNotes
+        chords = patch.pattern.getMidiNotes()  // Now correctly converts ChordNotes to MIDI numbers
         
         engine.attach(sampler)
         engine.connect(sampler, to: engine.mainMixerNode, format: nil)
@@ -51,7 +51,7 @@ public class Synth {
         }
     }
     
-    public func send(pitch: Float, volume: Float) {
+    public func send(pitch: Float, volume: Float = 1) {
         let chord = chords.chordFromFloat(pitch)
         guard chord != cache else { return }
         if let oldChord = cache {

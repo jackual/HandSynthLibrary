@@ -54,14 +54,22 @@ public extension Array where Element == [UInt8] {
     }
 }
 
+extension Note {
+    // Make noteDescription public
+    public var noteDescription: String {
+        let letter = String(describing: self).prefix(1)
+        let accidental = String(describing: self).dropFirst().prefix(1) == "s" ? "#" : ""
+        return "\(letter)\(accidental)"
+    }
+    
+//    static var allNotes: [Note] {
+//        return [.C, .Cs, .D, .Ds, .E, .F, .Fs, .G, .Gs, .A, .As, .B]
+//    }
+}
+
+
 public extension Note {
     public func getMidi(_ octave: Int) -> UInt8 {
         return UInt8(self.toOct(octave).pitch.midiNoteNumber)
-    }
-}
-
-public extension Note {
-    var description: String {
-        return "\(letter)\(accidental)"
     }
 }
