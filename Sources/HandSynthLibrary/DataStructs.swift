@@ -1,12 +1,4 @@
 //
-//  ChordNote.swift
-//  HandSynthLibrary
-//
-//  Created by Jack Brodie on 02/05/2025.
-//
-
-
-//
 //  DataStructs.swift
 //  HandSynthTesting
 //
@@ -32,10 +24,14 @@ public struct ChordNote {
 
 public struct Pattern {
     public let name: String
+    public let key: Key           // No longer optional
+    public let octBound: ClosedRange<Int>  // No longer optional
     public let patternNotes: [[ChordNote]]
     
-    public init(name: String, patternNotes: [[ChordNote]]) {
+    public init(name: String, key: Key, octBound: ClosedRange<Int>, patternNotes: [[ChordNote]]) {
         self.name = name
+        self.key = key
+        self.octBound = octBound
         self.patternNotes = patternNotes
     }
     
