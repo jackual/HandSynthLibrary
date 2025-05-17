@@ -24,14 +24,14 @@ public struct ChordNote {
 
 public struct Pattern {
     public let name: String
-    public let key: Key           // No longer optional
-    public let octBound: ClosedRange<Int>  // No longer optional
+    public let key: Key
+    public let baseOctave: Int  // Changed from octBound
     public let patternNotes: [[ChordNote]]
     
-    public init(name: String, key: Key, octBound: ClosedRange<Int>, patternNotes: [[ChordNote]]) {
+    public init(name: String, key: Key = .C, baseOctave: Int = 3, patternNotes: [[ChordNote]]) {
         self.name = name
         self.key = key
-        self.octBound = octBound
+        self.baseOctave = baseOctave
         self.patternNotes = patternNotes
     }
     
